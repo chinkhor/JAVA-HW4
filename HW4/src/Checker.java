@@ -3,6 +3,8 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -10,7 +12,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class Checker {
+public class Checker implements ActionListener{
+	
+	private  CheckerTile[][] tile = new CheckerTile[8][8];
 	
 	public Checker()
 	{
@@ -22,7 +26,6 @@ public class Checker {
 		Container pane = frame.getContentPane();
         pane.setLayout(new GridLayout(8,8));
         
-        JPanel[][] panel = new JPanel[8][8];
         int count = 0;
         for (int i=0; i<8; i++)
         {
@@ -30,14 +33,18 @@ public class Checker {
   			for (int j=0; j<8; j++)
   			{
   				count++;
-  				panel[i][j] = new JPanel();
+  				tile[i][j] = new CheckerTile(i,j);
   				if (count%2!=0)
-  					panel[i][j].setBackground(Color.RED);
-  				else 
-  					panel[i][j].setBackground(Color.BLACK);
-  				panel[i][j].setPreferredSize(new Dimension(100,100));
-  				panel[i][j].setLayout(new BorderLayout());
-  				pane.add(panel[i][j]);
+  					tile[i][j].setBackground(Color.RED);
+  				else
+  				{
+  					tile[i][j].setBackground(Color.BLACK);
+  					tile[i][j].setValid(true);
+  				}
+  				tile[i][j].setPreferredSize(new Dimension(100,100));
+  				tile[i][j].setLayout(new BorderLayout());
+  				
+  				pane.add(tile[i][j]);
   			}
         }
         
@@ -48,8 +55,11 @@ public class Checker {
         	while (j < 8)
   			{
         		CheckerComponent piece = new CheckerComponent(Color.WHITE,i,j);
-        		panel[i][j].add(piece, BorderLayout.CENTER);
+        		piece.addActionListener(this);
+        		tile[i][j].add(piece, BorderLayout.CENTER);
+        		
         		playerW.add(piece);
+        		tile[i][j].setOccupied(true, Color.WHITE);
   				j+=2;
   			}
         }
@@ -61,8 +71,10 @@ public class Checker {
         	while (j < 8)
   			{
         		CheckerComponent piece = new CheckerComponent(Color.ORANGE,i,j);
-        		panel[i][j].add(piece, BorderLayout.CENTER);
+        		piece.addActionListener(this);
+        		tile[i][j].add(piece, BorderLayout.CENTER);
         		playerY.add(piece);
+        		tile[i][j].setOccupied(true, Color.ORANGE);
   				j+=2;
   			}
         }
@@ -70,6 +82,13 @@ public class Checker {
 		frame.setVisible(true);
 	}
 
+		
+	public void actionPerformed (ActionEvent e)
+	{
+		CheckerComponent button = (CheckerComponent) e.getSource();
+		System.out.println("button [" + button.getCol() + ", " + button.getRow() + "], player " + button.getPlayer());
+	}
+	
 	
 	public static void main(String[] args) {
 		new Checker();

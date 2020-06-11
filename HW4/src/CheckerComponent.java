@@ -27,4 +27,19 @@ public class CheckerComponent extends JButton
       g.fillOval(x, y, size, size);
       super.paintComponent(g);
    }
+   
+    public Color getPlayer()
+	{
+		return this.player;
+	}
+
+	public int getRow()
+	{
+		return this.row;
+	}
+	
+	public int getCol()
+	{
+		return this.col;
+	}
 }
