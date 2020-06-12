@@ -56,6 +56,14 @@ public class Checker
 		return currentPlayer;
 	}
 	
+	public static Color getOpponentPlayer()
+	{
+		if (currentPlayer == Color.WHITE)
+			return Color.ORANGE;
+		else
+			return Color.WHITE;
+	}
+	
 	public static void setCurrentPlayer(Color color)
 	{
 		currentPlayer = color;

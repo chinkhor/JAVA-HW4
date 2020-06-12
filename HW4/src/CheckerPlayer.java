@@ -5,7 +5,7 @@ import javax.swing.BorderFactory;
 public class CheckerPlayer 
 {
 	private Color player;
-	private boolean select = false;
+	private boolean pieceSelected = false;
 	private ArrayList<CheckerComponent> pieces = new ArrayList<CheckerComponent>();
 	
 	public CheckerPlayer(Color player)
@@ -53,13 +53,15 @@ public class CheckerPlayer
 	
 	public boolean isPieceSelected()
 	{
-		return select;
+		return pieceSelected;
 	}
 	
 	public void move(CheckerComponent piece, int row, int col)
 	{
-		CheckerBoard board = Checker.getBoard();
 		Color player = piece.getPlayer();
+		
+		// remove piece
+		CheckerBoard board = Checker.getBoard();
 		board.removePiece(piece, piece.getRow(), piece.getCol());
 		pieces.remove(piece);
 		
@@ -71,25 +73,40 @@ public class CheckerPlayer
 		pieces.add(0, newpiece);
 	}
 	
-	public boolean checkForValidMove(int curRow, int curCol, int nextRow, int nextCol)
+	public void capture (int row, int col)
 	{
-		// orange player at bottom, valid moves are up (or -1 in row and +/- in col)
+		System.out.println("capture : " + row + ", " + col);
+		CheckerPlayer player = Checker.getPlayer(Checker.getOpponentPlayer());
+		CheckerComponent piece = player.getPiece(row,  col);
+		
+		if (piece != null)
+		{
+			System.out.println("capture found piece : ");
+			// remove piece
+			CheckerBoard board = Checker.getBoard();
+			board.removePiece(piece, piece.getRow(), piece.getCol());
+			pieces.remove(piece);
+		}
+	}
+	
+	public boolean checkForValidMove(int srcRow, int srcCol, int dstRow, int dstCol)
+	{
+		// orange player at bottom, valid moves are up (or -1 in row and +/- 1 in col)
 		if (this.player == Color.ORANGE)
 		{
-			System.out.println("nextrow - currow : " + (nextRow - curRow) + " Math.abs(nextCol - curCol): " + Math.abs(nextCol - curCol));
 			// valid move
-			if (((nextRow - curRow) == -1) && (Math.abs(nextCol - curCol) == 1))
+			if (((dstRow - srcRow) == -1) && (Math.abs(dstCol - srcCol) == 1))
 			{
 				return true;
 			}
 			else
 				return false;
 		}
-		// white player at top, valid moves are down (or 1 in row and +/- in col)
+		// white player at top, valid moves are down (or 1 in row and +/- 1 in col)
 		else
 		{
 			// valid move
-			if (((nextRow - curRow) == 1) && (Math.abs(nextCol - curCol) == 1))
+			if (((dstRow - srcRow) == 1) && (Math.abs(dstCol - srcCol) == 1))
 			{
 				return true;
 			}
@@ -98,21 +115,69 @@ public class CheckerPlayer
 		}
 	}
 	
-	
-	public void tileSelectionNotify(int row, int col)
+	public boolean checkForValidJump(int srcRow, int srcCol, int dstRow, int dstCol)
 	{
-		if (select)
+		// orange player at bottom, valid jumps are up (or -2 in row and +/- 2 in col)
+		if (this.player == Color.ORANGE)
+		{
+			// valid jump
+			if (((dstRow - srcRow) == -2) && (Math.abs(dstCol - srcCol) == 2))
+			{
+				return true;
+			}
+			else
+				return false;
+		}
+		// white player at top, valid jumps are down (or 2 in row and +/- 2 in col)
+		else
+		{
+			// valid move
+			if (((dstRow - srcRow) == 2) && (Math.abs(dstCol - srcCol) == 2))
+			{
+				return true;
+			}
+			else
+				return false;
+		}
+	}
+	
+	public void actionNotify(int dstRow, int dstCol)
+	{
+		if (pieceSelected)
 		{
 			CheckerComponent selectedPiece = getLastSelectedPiece();
-			System.out.println("Selected piece " + selectedPiece.getRow() + ", " + selectedPiece.getCol() + " to " + row + ", " + col);
-			boolean validMove = checkForValidMove(selectedPiece.getRow(), selectedPiece.getCol(), row, col);
-			System.out.println("valid move: " + validMove);
+				
+			int srcRow = selectedPiece.getRow();
+			int srcCol = selectedPiece.getCol();
+			System.out.println("Selected piece " + srcRow + ", " + srcCol + " to " + dstRow + ", " + dstCol);
+			
+			boolean validMove = checkForValidMove(srcRow, srcCol, dstRow, dstCol);
 			if (validMove)
 			{
-				move(selectedPiece, row, col);
-				select = false;
+				move(selectedPiece, dstRow, dstCol);
+				pieceSelected = false;
 				Checker.turnOver();
+				return;
 			}
+			
+			boolean validJump = checkForValidJump(srcRow, srcCol, dstRow, dstCol);
+			if (validJump)
+			{
+				int midRow = (dstRow - srcRow)/2 + srcRow;
+				int midCol = (dstCol - srcCol)/2 + srcCol;
+				CheckerBoard board = Checker.getBoard();
+				
+				// check for valid capture
+				if (board.getTileOwner(midRow, midCol) == Checker.getOpponentPlayer())
+				{
+					move(selectedPiece, dstRow, dstCol);
+					capture(midRow, midCol);
+					pieceSelected = false;
+					Checker.turnOver();
+					return;
+				}
+			}
+			
 		}
 		else
 			System.out.println("No piece is selected yet");
@@ -135,9 +200,22 @@ public class CheckerPlayer
 				int index = pieces.indexOf(piece);
 				CheckerComponent extract = pieces.remove(index);
 				pieces.add(0,  extract);
-				select = true;
+				pieceSelected = true;
 				break;
 			}
 		}
+	}
+	
+	public CheckerComponent getPiece(int row, int col)
+	{
+		String label = CheckerComponent.constructLabel(row,  col);
+		for (CheckerComponent piece : pieces)
+		{
+			if (label.equals(piece.getLabel()))
+			{
+				return piece;
+			}
+		}
+		return null;
 	}
 }

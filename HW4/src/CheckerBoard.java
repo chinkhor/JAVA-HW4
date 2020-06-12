@@ -42,6 +42,7 @@ public class CheckerBoard implements ActionListener
 	{
 		// place piece on tile
 		tile[row][col].add(piece, BorderLayout.CENTER);
+		tile[row][col].repaint();
 		tile[row][col].setOccupied(true, player);
 		
 		piece.addActionListener(this);
@@ -52,6 +53,7 @@ public class CheckerBoard implements ActionListener
 	{
 		// remove piece from tile
 		tile[row][col].remove(piece);
+		tile[row][col].repaint();
 		tile[row][col].setOccupied(false, null);
 		
 		if(piece.getActionListeners().length > 0) 
@@ -63,7 +65,19 @@ public class CheckerBoard implements ActionListener
 		
 		deSelectTile (row, col);
 	}
+	
 
+	public Color getTileOwner (int row, int col)
+	{
+		CheckerTile t = tile[row][col];
+		
+		if (t.getOccupied()==false)
+			return null;
+		else 
+			return t.getPlayer();
+		
+	}
+	
 	public void selectTile(int row, int col)
 	{
 		tile[row][col].setBorder(BorderFactory.createLineBorder(Color.ORANGE));
