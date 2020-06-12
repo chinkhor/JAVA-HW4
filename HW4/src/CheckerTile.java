@@ -1,3 +1,4 @@
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import java.awt.Color;
@@ -37,7 +38,6 @@ public class CheckerTile extends JPanel implements MouseListener {
 		{
 			this.player = null;
 		}
-		
 	}
 	
 	public boolean getValid()
@@ -68,6 +68,7 @@ public class CheckerTile extends JPanel implements MouseListener {
 	public void mouseClicked(MouseEvent e) 
 	{ 
 		CheckerTile tile = (CheckerTile) e.getSource();
+		tile.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
 		System.out.println("tile [" + tile.getCol() + ", " + tile.getRow() + "], occupied " + tile.getOccupied() + ", by " + tile.getPlayer() + ", valid " + tile.getValid());
 
     }

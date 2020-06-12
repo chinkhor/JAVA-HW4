@@ -48,7 +48,7 @@ public class Checker implements ActionListener{
   			}
         }
         
-        ArrayList<CheckerComponent> playerW = new ArrayList<CheckerComponent>();
+        CheckerPlayer playerW = new CheckerPlayer();
         for (int i=0; i<3; i++)
         {
         	int j = i % 2;
@@ -64,7 +64,7 @@ public class Checker implements ActionListener{
   			}
         }
 		
-        ArrayList<CheckerComponent> playerY = new ArrayList<CheckerComponent>();
+        CheckerPlayer playerY = new CheckerPlayer();
         for (int i=5; i<8; i++)
         {
         	int j = i % 2;
@@ -86,6 +86,7 @@ public class Checker implements ActionListener{
 	public void actionPerformed (ActionEvent e)
 	{
 		CheckerComponent button = (CheckerComponent) e.getSource();
+		tile[button.getRow()][button.getCol()].setBorder(BorderFactory.createLineBorder(Color.ORANGE));
 		System.out.println("button [" + button.getCol() + ", " + button.getRow() + "], player " + button.getPlayer());
 	}
 	
