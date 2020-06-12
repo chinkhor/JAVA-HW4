@@ -9,6 +9,7 @@ public class CheckerComponent extends JButton
    private int size = CheckerBoard.TILE_SIZE/2;
    private Color player;
    private int row, col;
+   private String label;
    
    public CheckerComponent(Color player, int row, int col)
    {
@@ -17,6 +18,13 @@ public class CheckerComponent extends JButton
 	   this.player = player;
 	   this.row = row;
 	   this.col = col;
+	   this.label = CheckerComponent.constructLabel(row,  col);
+	   //System.out.println("Piece label: " + this.label);
+   }
+   
+   public static String constructLabel (int row, int col)
+   {
+	   return (Integer.toString(row) + "," + Integer.toString(col));
    }
    
    public void paintComponent(Graphics g)
@@ -40,5 +48,10 @@ public class CheckerComponent extends JButton
 	public int getCol()
 	{
 		return this.col;
+	}
+	
+	public String getLabel()
+	{
+		return this.label;
 	}
 }

@@ -7,6 +7,7 @@ public class Checker
 {
 	private static CheckerPlayer playerW, playerY;
 	private static CheckerBoard board;
+	private static Color currentPlayer = Color.ORANGE;
 	
 	public Checker()
 	{
@@ -39,6 +40,16 @@ public class Checker
 			return playerW;
 		else
 			return playerY;
+	}
+	
+	public static Color getCurrentPlayer()
+	{
+		return currentPlayer;
+	}
+	
+	public static void setCurrentPlayer(Color color)
+	{
+		currentPlayer = color;
 	}
 	
 	public static CheckerBoard getBoard()

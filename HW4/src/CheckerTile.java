@@ -68,10 +68,10 @@ public class CheckerTile extends JPanel implements MouseListener
 	{ 
 		CheckerTile tile = (CheckerTile) e.getSource();
 		
-		CheckerBoard board = Checker.getBoard();
-		board.selectTile(tile.getRow(), tile.getCol());
+		//CheckerBoard board = Checker.getBoard();
+		//board.selectTile(tile.getRow(), tile.getCol());
 		
-		//System.out.println("tile [" + tile.getRow() + ", " +  tile.getCol() + "], occupied " + tile.getOccupied() + ", by " + tile.getPlayer() + ", valid " + tile.getValid());
+		System.out.println("tile [" + tile.getRow() + ", " +  tile.getCol() + "], occupied " + tile.getOccupied() + ", by " + tile.getPlayer() + ", valid " + tile.getValid());
 
     }
 

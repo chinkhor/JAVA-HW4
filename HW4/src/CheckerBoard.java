@@ -39,6 +39,7 @@ public class CheckerBoard implements ActionListener
 	
 	public void addPiece(CheckerComponent piece, Color color, int row, int col)
 	{
+		// place piece on tile
 		tile[row][col].add(piece, BorderLayout.CENTER);
 		tile[row][col].setOccupied(true, color);
 		
@@ -50,11 +51,33 @@ public class CheckerBoard implements ActionListener
 		tile[row][col].setBorder(BorderFactory.createLineBorder(Color.ORANGE));
 	}
 	
+	public void deSelectTile(int row, int col)
+	{
+		tile[row][col].setBorder(BorderFactory.createEmptyBorder());
+	}
+	
 	public void actionPerformed (ActionEvent e)
 	{
-		CheckerComponent button = (CheckerComponent) e.getSource();
-		tile[button.getRow()][button.getCol()].setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-		//System.out.println("button [" + button.getCol() + ", " + button.getRow() + "], player " + button.getPlayer());
+		CheckerComponent piece = (CheckerComponent) e.getSource();
+		
+		if (piece.getPlayer() == Checker.getCurrentPlayer())
+		{
+			int row = piece.getRow();
+			int col = piece.getCol();
+			
+			// get current player
+			CheckerPlayer player = Checker.getPlayer(piece.getPlayer());
+			
+			// get last selected piece (if any) by current player and de-select the component
+			CheckerComponent lastSelectedPiece = player.getLastSelectedPiece();
+			deSelectTile(lastSelectedPiece.getRow(), lastSelectedPiece.getCol());
+			
+			// select current piece clicked by player 
+			player.selectPiece(row, col);
+			selectTile(row, col);
+			
+		}
+		
 	}
 
 

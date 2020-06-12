@@ -4,13 +4,11 @@ import javax.swing.BorderFactory;
 
 public class CheckerPlayer 
 {
-	private boolean myturn;
 	private Color color;
 	private ArrayList<CheckerComponent> pieces = new ArrayList<CheckerComponent>();
 	
 	public CheckerPlayer(Color color)
 	{
-		myturn = false;
 		this.color = color;
 		
 		// white color player
@@ -51,6 +49,25 @@ public class CheckerPlayer
 		}
 	}
 	
+	public CheckerComponent getLastSelectedPiece()
+	{
+		// get the first piece in the arraylist
+		// note: the last selected piece will be always moved to index 0
+		return pieces.get(0);
+	}
 	
-	
+	public void selectPiece(int row, int col)
+	{
+		String label = CheckerComponent.constructLabel(row,  col);
+		for (CheckerComponent piece : pieces)
+		{
+			if (label.equals(piece.getLabel()))
+			{
+				int index = pieces.indexOf(piece);
+				CheckerComponent extract = pieces.remove(index);
+				pieces.add(0,  extract);
+				break;
+			}
+		}
+	}
 }
