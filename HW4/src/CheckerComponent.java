@@ -1,13 +1,12 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 import javax.swing.JButton;
 
 public class CheckerComponent extends JButton
 {  
-   private int x = 25, y = 25;
-   private int size = 50;
+   private int x = CheckerBoard.TILE_SIZE/4, y = CheckerBoard.TILE_SIZE/4;
+   private int size = CheckerBoard.TILE_SIZE/2;
    private Color player;
    private int row, col;
    
