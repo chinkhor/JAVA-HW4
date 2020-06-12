@@ -111,6 +111,7 @@ public class CheckerPlayer
 			{
 				move(selectedPiece, row, col);
 				select = false;
+				Checker.turnOver();
 			}
 		}
 		else

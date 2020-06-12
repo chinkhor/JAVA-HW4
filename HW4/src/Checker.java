@@ -34,6 +34,15 @@ public class Checker
 		frame.setVisible(true);
 	}
 	
+	public static void turnOver()
+	{
+		if (currentPlayer == Color.WHITE)
+			currentPlayer = Color.ORANGE;
+		else
+			currentPlayer = Color.WHITE;
+		
+	}
+	
 	public static CheckerPlayer getPlayer (Color color)
 	{
 		if (color == Color.WHITE)
