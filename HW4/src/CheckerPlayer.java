@@ -8,6 +8,7 @@ public class CheckerPlayer
 	private boolean pieceSelected = false;
 	private ArrayList<CheckerComponent> pieces = new ArrayList<CheckerComponent>();
 	
+	// constructor
 	public CheckerPlayer(Color player)
 	{
 		this.player = player;
@@ -32,6 +33,7 @@ public class CheckerPlayer
 		}
 	}
 	
+	// add pieces to board
 	public void addPiece (Color player, int row)
 	{
 		int col = row % 2;
@@ -50,12 +52,13 @@ public class CheckerPlayer
 		}
 	}
 	
-	
+	// check if player already select his piece for next action
 	public boolean isPieceSelected()
 	{
 		return pieceSelected;
 	}
 	
+	// player to make a move
 	public void move(CheckerComponent piece, int row, int col)
 	{
 		Color player = piece.getPlayer();
@@ -73,6 +76,7 @@ public class CheckerPlayer
 		pieces.add(0, newpiece);
 	}
 	
+	// player to capture opponent piece
 	public void capture (int row, int col)
 	{
 		System.out.println("capture : " + row + ", " + col);
@@ -89,6 +93,7 @@ public class CheckerPlayer
 		}
 	}
 	
+	// player to check if a move is valid
 	public boolean checkForValidMove(int srcRow, int srcCol, int dstRow, int dstCol)
 	{
 		// orange player at bottom, valid moves are up (or -1 in row and +/- 1 in col)
@@ -115,6 +120,7 @@ public class CheckerPlayer
 		}
 	}
 	
+	// player to check can make a jump to capture, this check will follow by a capture test
 	public boolean checkForValidJump(int srcRow, int srcCol, int dstRow, int dstCol)
 	{
 		// orange player at bottom, valid jumps are up (or -2 in row and +/- 2 in col)
@@ -141,6 +147,7 @@ public class CheckerPlayer
 		}
 	}
 	
+	// notify player after mouse click with a piece is selected for next action
 	public void actionNotify(int dstRow, int dstCol)
 	{
 		if (pieceSelected)
@@ -183,6 +190,7 @@ public class CheckerPlayer
 			System.out.println("No piece is selected yet");
 	}
 	
+	// return player last selected piece for action
 	public CheckerComponent getLastSelectedPiece()
 	{
 		// get the first piece in the arraylist
@@ -190,6 +198,7 @@ public class CheckerPlayer
 		return pieces.get(0);
 	}
 	
+	// player action in selecting a piece, can switch piece if not yet making an action
 	public void selectPiece(int row, int col)
 	{
 		String label = CheckerComponent.constructLabel(row,  col);
@@ -206,6 +215,7 @@ public class CheckerPlayer
 		}
 	}
 	
+	// player to get a piece, return with its piece component
 	public CheckerComponent getPiece(int row, int col)
 	{
 		String label = CheckerComponent.constructLabel(row,  col);

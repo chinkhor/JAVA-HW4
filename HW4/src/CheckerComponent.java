@@ -11,6 +11,7 @@ public class CheckerComponent extends JButton
    private int row, col;
    private String label;
    
+   // constructor
    public CheckerComponent(Color player, int row, int col)
    {
 	   super();
@@ -22,11 +23,13 @@ public class CheckerComponent extends JButton
 	   //System.out.println("Piece label: " + this.label);
    }
    
+   // construct label based on row and col position
    public static String constructLabel (int row, int col)
    {
 	   return (Integer.toString(row) + "," + Integer.toString(col));
    }
    
+   // paint the button/piece
    public void paintComponent(Graphics g)
    {  
       g.setColor(player);
@@ -35,23 +38,27 @@ public class CheckerComponent extends JButton
       super.paintComponent(g);
    }
    
-    public Color getPlayer()
-	{
-		return this.player;
-	}
+   // get player owning the piece, his/her color code
+   public Color getPlayer()
+   {
+	   return this.player;
+   }
 
-	public int getRow()
-	{
-		return this.row;
-	}
+   // get piece row position
+   public int getRow()
+   {
+	   return this.row;
+   }
 	
-	public int getCol()
-	{
-		return this.col;
-	}
+   // get piece column position
+   public int getCol()
+   {
+	   return this.col;
+   }
 	
-	public String getLabel()
-	{
-		return this.label;
-	}
+   // get piece label, constructed with its row and column position or coordinate
+   public String getLabel()
+   {
+	   return this.label;
+   }
 }

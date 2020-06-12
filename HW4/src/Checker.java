@@ -9,6 +9,7 @@ public class Checker
 	private static CheckerBoard board;
 	private static Color currentPlayer = Color.ORANGE;
 	
+	// constructor
 	public Checker()
 	{
 		int tiles = CheckerBoard.MAX_TILES;
@@ -34,6 +35,7 @@ public class Checker
 		frame.setVisible(true);
 	}
 	
+	// change turn of the play
 	public static void turnOver()
 	{
 		if (currentPlayer == Color.WHITE)
@@ -43,6 +45,7 @@ public class Checker
 		
 	}
 	
+	// get the player's instance
 	public static CheckerPlayer getPlayer (Color color)
 	{
 		if (color == Color.WHITE)
@@ -51,11 +54,13 @@ public class Checker
 			return playerY;
 	}
 	
+	// get current player in turn
 	public static Color getCurrentPlayer()
 	{
 		return currentPlayer;
 	}
 	
+	// get opponent player in turn
 	public static Color getOpponentPlayer()
 	{
 		if (currentPlayer == Color.WHITE)
@@ -64,16 +69,19 @@ public class Checker
 			return Color.WHITE;
 	}
 	
+	// set current player
 	public static void setCurrentPlayer(Color color)
 	{
 		currentPlayer = color;
 	}
 	
+	// get board's instance
 	public static CheckerBoard getBoard()
 	{
 		return board;
 	}
 	
+	// main, entry point
 	public static void main(String[] args) {
 		new Checker();
 

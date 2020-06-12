@@ -12,6 +12,7 @@ public class CheckerBoard implements ActionListener
 	public static final int TILE_SIZE = 100;
 	private CheckerTile[][] tile = new CheckerTile[MAX_TILES][MAX_TILES];
 	
+	// constructor
 	public CheckerBoard (Container pane)
 	{
 		int count = 0;
@@ -66,7 +67,7 @@ public class CheckerBoard implements ActionListener
 		deSelectTile (row, col);
 	}
 	
-
+    // check the owner/player of a given tile (with a piece on it or not, i.e. occupied) 
 	public Color getTileOwner (int row, int col)
 	{
 		CheckerTile t = tile[row][col];
@@ -78,16 +79,19 @@ public class CheckerBoard implements ActionListener
 		
 	}
 	
+	// set tile border to highlight selection
 	public void selectTile(int row, int col)
 	{
 		tile[row][col].setBorder(BorderFactory.createLineBorder(Color.ORANGE));
 	}
 	
+	// clear tile border to highlight de-selection
 	public void deSelectTile(int row, int col)
 	{
 		tile[row][col].setBorder(BorderFactory.createEmptyBorder());
 	}
 	
+	// button click action, i.e. a piece is clicked or selected
 	public void actionPerformed (ActionEvent e)
 	{
 		CheckerComponent piece = (CheckerComponent) e.getSource();
