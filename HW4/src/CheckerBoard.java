@@ -37,13 +37,31 @@ public class CheckerBoard implements ActionListener
         }
 	}
 	
-	public void addPiece(CheckerComponent piece, Color color, int row, int col)
+	// add piece on board
+	public void addPiece(CheckerComponent piece, Color player, int row, int col)
 	{
 		// place piece on tile
 		tile[row][col].add(piece, BorderLayout.CENTER);
-		tile[row][col].setOccupied(true, color);
+		tile[row][col].setOccupied(true, player);
 		
 		piece.addActionListener(this);
+	}
+	
+	// remove piece from board
+	public void removePiece(CheckerComponent piece, int row, int col)
+	{
+		// remove piece from tile
+		tile[row][col].remove(piece);
+		tile[row][col].setOccupied(false, null);
+		
+		if(piece.getActionListeners().length > 0) 
+		{
+	        for(ActionListener g : piece.getActionListeners()) {
+	            piece.removeActionListener(g);
+	        }
+	    }
+		
+		deSelectTile (row, col);
 	}
 
 	public void selectTile(int row, int col)
