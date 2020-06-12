@@ -146,6 +146,41 @@ public class CheckerPlayer
 				return false;
 		}
 	}
+
+	
+	public boolean continuousCaptureCheck (int srcRow, int srcCol)
+	{
+		CheckerBoard board = Checker.getBoard();
+		
+		if (this.player == Color.ORANGE)
+		{
+			if ((board.getTileOwner(srcRow-1, srcCol-1) == Checker.getOpponentPlayer()) &&
+				(board.getTileOwner(srcRow-2, srcCol-2) == Color.BLACK)) // use BLACK to indicate un-occupied tile	
+			{
+				return true;
+			}
+			else if ((board.getTileOwner(srcRow-1, srcCol+1) == Checker.getOpponentPlayer()) &&
+					 (board.getTileOwner(srcRow-2, srcCol+2) == Color.BLACK)) // use BLACK to indicate un-occupied tile	
+			{
+				return true;
+			}	
+		}
+		else
+		{
+			if ((board.getTileOwner(srcRow+1, srcCol-1) == Checker.getOpponentPlayer()) &&
+				(board.getTileOwner(srcRow+2, srcCol-2) == Color.BLACK)) // use BLACK to indicate un-occupied tile	
+			{
+				return true;
+			}
+			else if ((board.getTileOwner(srcRow+1, srcCol+1) == Checker.getOpponentPlayer()) &&
+						(board.getTileOwner(srcRow+2, srcCol+2) == Color.BLACK)) // use BLACK to indicate un-occupied tile	
+			{
+				return true;
+			}				
+		}
+		
+		return false;
+	}
 	
 	// notify player after mouse click with a piece is selected for next action
 	public void actionNotify(int dstRow, int dstCol)
@@ -179,8 +214,18 @@ public class CheckerPlayer
 				{
 					move(selectedPiece, dstRow, dstCol);
 					capture(midRow, midCol);
-					pieceSelected = false;
-					Checker.turnOver();
+					
+					// check for continuous action for capture
+					if (continuousCaptureCheck(dstRow, dstCol))
+					{
+						selectPiece(dstRow, dstCol);
+						board.selectTile(dstRow, dstCol);
+					}
+					else
+					{
+						pieceSelected = false;
+						Checker.turnOver();
+					}
 					return;
 				}
 			}
