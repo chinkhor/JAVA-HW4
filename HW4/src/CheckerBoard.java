@@ -39,7 +39,7 @@ public class CheckerBoard implements ActionListener
 	}
 	
 	// add piece on board
-	public void addPiece(CheckerComponent piece, Color player, int row, int col)
+	public void addPiece(CheckerPiece piece, Color player, int row, int col)
 	{
 		// place piece on tile
 		tile[row][col].add(piece, BorderLayout.CENTER);
@@ -50,7 +50,7 @@ public class CheckerBoard implements ActionListener
 	}
 	
 	// remove piece from board
-	public void removePiece(CheckerComponent piece, int row, int col)
+	public void removePiece(CheckerPiece piece, int row, int col)
 	{
 		// remove piece from tile
 		tile[row][col].remove(piece);
@@ -70,10 +70,14 @@ public class CheckerBoard implements ActionListener
     // check the owner/player of a given tile (with a piece on it or not, i.e. occupied) 
 	public Color getTileOwner (int row, int col)
 	{
+		// check out of bound
+		if (row < 0 || row > MAX_TILES || col < 0 || col > MAX_TILES)
+			return null;
+		
 		CheckerTile t = tile[row][col];
 		
 		if (t.getOccupied()==false)
-			return null;
+			return Color.BLACK; // use black to indicate un-occupied
 		else 
 			return t.getPlayer();
 		
@@ -94,7 +98,7 @@ public class CheckerBoard implements ActionListener
 	// button click action, i.e. a piece is clicked or selected
 	public void actionPerformed (ActionEvent e)
 	{
-		CheckerComponent piece = (CheckerComponent) e.getSource();
+		CheckerPiece piece = (CheckerPiece) e.getSource();
 		
 		if (piece.getPlayer() == Checker.getCurrentPlayer())
 		{
@@ -105,7 +109,7 @@ public class CheckerBoard implements ActionListener
 			CheckerPlayer player = Checker.getPlayer(piece.getPlayer());
 			
 			// get last selected piece (if any) by current player and de-select the component
-			CheckerComponent lastSelectedPiece = player.getLastSelectedPiece();
+			CheckerPiece lastSelectedPiece = player.getLastSelectedPiece();
 			deSelectTile(lastSelectedPiece.getRow(), lastSelectedPiece.getCol());
 			
 			// select current piece clicked by player 

@@ -6,7 +6,7 @@ public class CheckerPlayer
 {
 	private Color player;
 	private boolean pieceSelected = false;
-	private ArrayList<CheckerComponent> pieces = new ArrayList<CheckerComponent>();
+	private ArrayList<CheckerPiece> pieces = new ArrayList<CheckerPiece>();
 	
 	// constructor
 	public CheckerPlayer(Color player)
@@ -40,7 +40,7 @@ public class CheckerPlayer
     	while (col < CheckerBoard.MAX_TILES)
 		{
     		// create new piece
-    		CheckerComponent piece = new CheckerComponent(player,row,col);
+    		CheckerPiece piece = new CheckerPiece(player,row,col);
     		
     		// add piece to the checker board
     		CheckerBoard board = Checker.getBoard();
@@ -59,7 +59,7 @@ public class CheckerPlayer
 	}
 	
 	// player to make a move
-	public void move(CheckerComponent piece, int row, int col)
+	public void move(CheckerPiece piece, int row, int col)
 	{
 		Color player = piece.getPlayer();
 		
@@ -69,7 +69,7 @@ public class CheckerPlayer
 		pieces.remove(piece);
 		
 		// create new piece
-		CheckerComponent newpiece = new CheckerComponent(player,row,col);
+		CheckerPiece newpiece = new CheckerPiece(player,row,col);
 		
 		// add piece to the checker board
 		board.addPiece(newpiece, player, row, col);
@@ -81,7 +81,7 @@ public class CheckerPlayer
 	{
 		System.out.println("capture : " + row + ", " + col);
 		CheckerPlayer player = Checker.getPlayer(Checker.getOpponentPlayer());
-		CheckerComponent piece = player.getPiece(row,  col);
+		CheckerPiece piece = player.getPiece(row,  col);
 		
 		if (piece != null)
 		{
@@ -187,7 +187,7 @@ public class CheckerPlayer
 	{
 		if (pieceSelected)
 		{
-			CheckerComponent selectedPiece = getLastSelectedPiece();
+			CheckerPiece selectedPiece = getLastSelectedPiece();
 				
 			int srcRow = selectedPiece.getRow();
 			int srcCol = selectedPiece.getCol();
@@ -236,7 +236,7 @@ public class CheckerPlayer
 	}
 	
 	// return player last selected piece for action
-	public CheckerComponent getLastSelectedPiece()
+	public CheckerPiece getLastSelectedPiece()
 	{
 		// get the first piece in the arraylist
 		// note: the last selected piece will be always moved to index 0
@@ -246,13 +246,13 @@ public class CheckerPlayer
 	// player action in selecting a piece, can switch piece if not yet making an action
 	public void selectPiece(int row, int col)
 	{
-		String label = CheckerComponent.constructLabel(row,  col);
-		for (CheckerComponent piece : pieces)
+		String label = CheckerPiece.constructLabel(row,  col);
+		for (CheckerPiece piece : pieces)
 		{
 			if (label.equals(piece.getLabel()))
 			{
 				int index = pieces.indexOf(piece);
-				CheckerComponent extract = pieces.remove(index);
+				CheckerPiece extract = pieces.remove(index);
 				pieces.add(0,  extract);
 				pieceSelected = true;
 				break;
@@ -261,10 +261,10 @@ public class CheckerPlayer
 	}
 	
 	// player to get a piece, return with its piece component
-	public CheckerComponent getPiece(int row, int col)
+	public CheckerPiece getPiece(int row, int col)
 	{
-		String label = CheckerComponent.constructLabel(row,  col);
-		for (CheckerComponent piece : pieces)
+		String label = CheckerPiece.constructLabel(row,  col);
+		for (CheckerPiece piece : pieces)
 		{
 			if (label.equals(piece.getLabel()))
 			{

@@ -3,7 +3,7 @@ import java.awt.Graphics;
 
 import javax.swing.JButton;
 
-public class CheckerComponent extends JButton
+public class CheckerPiece extends JButton
 {  
    private int x = CheckerBoard.TILE_SIZE/4, y = CheckerBoard.TILE_SIZE/4;
    private int size = CheckerBoard.TILE_SIZE/2;
@@ -12,14 +12,14 @@ public class CheckerComponent extends JButton
    private String label;
    
    // constructor
-   public CheckerComponent(Color player, int row, int col)
+   public CheckerPiece(Color player, int row, int col)
    {
 	   super();
 	   setBorderPainted(false);
 	   this.player = player;
 	   this.row = row;
 	   this.col = col;
-	   this.label = CheckerComponent.constructLabel(row,  col);
+	   this.label = CheckerPiece.constructLabel(row,  col);
 	   //System.out.println("Piece label: " + this.label);
    }
    
