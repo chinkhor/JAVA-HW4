@@ -10,6 +10,7 @@ public class CheckerBoard implements ActionListener
 {
 	public static final int MAX_TILES = 8;
 	public static final int TILE_SIZE = 100;
+	public static final int PLAYING_ROWS = 3;
 	private CheckerTile[][] tile = new CheckerTile[MAX_TILES][MAX_TILES];
 	
 	// constructor

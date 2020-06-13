@@ -18,7 +18,7 @@ public class CheckerPlayer
 		// white color player
 		if (player == Color.WHITE)
 		{
-			for (int row=0; row<3; row++)
+			for (int row=0; row<CheckerBoard.PLAYING_ROWS; row++)
 		    {
 				//create and add piece to board and player array list
 				addPiece (player, row);
@@ -28,7 +28,7 @@ public class CheckerPlayer
 		// orange color player
 		else
 		{
-			for (int row=5; row<CheckerBoard.MAX_TILES; row++)
+			for (int row=CheckerBoard.MAX_TILES-CheckerBoard.PLAYING_ROWS; row<CheckerBoard.MAX_TILES; row++)
 		    {
 				//create and add piece to board and player array list
 				addPiece (player, row);
