@@ -108,14 +108,17 @@ public class CheckerBoard implements ActionListener
 			// get current player
 			CheckerPlayer player = Checker.getPlayer(piece.getPlayer());
 			
-			// get last selected piece (if any) by current player and de-select the component
-			CheckerPiece lastSelectedPiece = player.getLastSelectedPiece();
-			deSelectTile(lastSelectedPiece.getRow(), lastSelectedPiece.getCol());
+			// don't allow piece switching when capture is in progress
+			if (!player.getCaptureInProgress())
+			{
+				// get last selected piece (if any) by current player and de-select the component
+				CheckerPiece lastSelectedPiece = player.getLastSelectedPiece();
+				deSelectTile(lastSelectedPiece.getRow(), lastSelectedPiece.getCol());
 			
-			// select current piece clicked by player 
-			player.selectPiece(row, col);
-			selectTile(row, col);
-			
+				// select current piece clicked by player 
+				player.selectPiece(row, col);
+				selectTile(row, col);
+			}
 		}
 		
 	}

@@ -8,6 +8,7 @@ public class CheckerPlayer
 	private boolean pieceSelected = false;
 	private ArrayList<CheckerPiece> pieces = new ArrayList<CheckerPiece>();
 	private int kingRow;
+	private boolean captureInProgress = false;
 	
 	// constructor
 	public CheckerPlayer(Color player)
@@ -114,10 +115,16 @@ public class CheckerPlayer
 		}
 	}
 				
-	// player to check if a fly is valid
-	public boolean checkForValidFly (int srcRow, int srcCol, int dstRow, int dstCol)
+	// player to check if can fly and capture
+	// return -1: cannot fly
+	// return 0: can fly, but no capture
+	// return 1: can fly and capture
+	public int checkForValidFlyCapture (int srcRow, int srcCol, int dstRow, int dstCol)
 	{
 		CheckerBoard board = Checker.getBoard();
+		int opponentRow = 0;
+		int opponentCol = 0;
+		int opponentCount = 0;
 		
 		// fly diagonally
 		if (Math.abs(dstRow - srcRow) == Math.abs(dstCol - srcCol))
@@ -134,13 +141,37 @@ public class CheckerPlayer
 			{
 				row += incrementRow;
 				col += incrementCol;
-				if (board.getTileOwner(row, col) != Color.BLACK) // use black to indicate un-occupied
-					return false;		
+				Color player = board.getTileOwner(row, col);
+				if (player == Checker.getCurrentPlayer()) // blocked by own's piece
+					return -1;
+				else if (player == Checker.getOpponentPlayer()) // potential capture 
+				{
+					if (opponentCount > 0) // two opponent pieces along the fly
+						return -1;
+					
+					opponentCount++;
+					opponentRow = row;
+					opponentCol = col;
+				}	
 			}
-			return true; // no obstacle if get here
+			
+			// if get here, either no obstacle or can capture
+			if (opponentCount == 1)
+			{
+				capture (opponentRow, opponentCol);
+				return 1;
+			}
+			else
+			{	
+				// if captureInProgress, prohibit subsequent fly without capture
+				if (captureInProgress)
+					return -1;
+				else
+					return 0;
+			}
 		}
 		
-		return false;
+		return -1;
 	}
 		
 	// player to check can make a jump to capture, this check will follow by a capture test
@@ -160,7 +191,6 @@ public class CheckerPlayer
 		}
 	}
 
-	
 	public boolean continuousCaptureCheck (int srcRow, int srcCol)
 	{
 		CheckerBoard board = Checker.getBoard();
@@ -195,9 +225,41 @@ public class CheckerPlayer
 		return false;
 	}
 	
+	public boolean continuousFlyCaptureCheck (int srcRow, int srcCol, int incrementRow, int incrementCol)
+	{
+		CheckerBoard board = Checker.getBoard();
+		int row = srcRow + incrementRow;
+		int col = srcCol + incrementCol;
+		int opponentCount = 0;
+		
+		while (true)
+		{
+			Color player = board.getTileOwner(row, col);
+			if (player == Checker.getOpponentPlayer())
+				++opponentCount;
+		
+			// only potential capture scenario
+			if ((opponentCount == 1) && (player == Color.BLACK)) // use Color.BLACK to indicate un-occupied tile
+				return true;
+			
+			// player == null -> out of board boundary, stop
+			// player == Checker.getCurrentPlayer -> blocked by own's piece, stop
+			// opponentCount > 1 -> two opponent pieces along the line, stop
+			// player == Color.BLACK -> un-occupied title without opponent piece in between, stop
+			if ((player == null) || (player == Checker.getCurrentPlayer()) || (opponentCount > 1) || (player == Color.BLACK))
+				break;	
+			
+			row += incrementRow;
+			col += incrementCol;
+		}
+		return false;
+	}
+	
 	// notify player after mouse click with a piece is selected for next action
 	public void actionNotify(int dstRow, int dstCol)
 	{
+		CheckerBoard board = Checker.getBoard();
+		
 		if (pieceSelected)
 		{
 			CheckerPiece selectedPiece = getLastSelectedPiece();
@@ -208,18 +270,35 @@ public class CheckerPlayer
 			
 			if (selectedPiece.getCrown())
 			{
-				if (checkForValidFly(srcRow, srcCol, dstRow, dstCol))
+				int status = checkForValidFlyCapture(srcRow, srcCol, dstRow, dstCol);
+		
+				if ( status >= 0)
 				{
 					// valid fly
 					move(selectedPiece, dstRow, dstCol);
-					pieceSelected = false;
-					Checker.turnOver();
-					return;
+					
+					// already capture, check for continuous action for fly and capture
+					if ((status > 0) &&
+						(continuousFlyCaptureCheck(dstRow, dstCol,1,1)  ||
+						 continuousFlyCaptureCheck(dstRow, dstCol,1,-1) ||
+						 continuousFlyCaptureCheck(dstRow, dstCol,-1,1) ||
+						 continuousFlyCaptureCheck(dstRow, dstCol,-1,-1)))
+					{
+						selectPiece(dstRow, dstCol);
+						board.selectTile(dstRow, dstCol);
+						captureInProgress = true;
+					}
+					else
+					{
+						captureInProgress = false;
+						pieceSelected = false;
+						Checker.turnOver();
+					}
 				}
 			}
 			else
 			{
-				if (checkForValidMove(srcRow, srcCol, dstRow, dstCol))
+				if (!captureInProgress && checkForValidMove(srcRow, srcCol, dstRow, dstCol))
 				{
 					// valid move
 					move(selectedPiece, dstRow, dstCol);
@@ -233,13 +312,14 @@ public class CheckerPlayer
 				{
 					int midRow = (dstRow - srcRow)/2 + srcRow;
 					int midCol = (dstCol - srcCol)/2 + srcCol;
-					CheckerBoard board = Checker.getBoard();
+					
 				
 					// check for valid capture
 					if (board.getTileOwner(midRow, midCol) == Checker.getOpponentPlayer())
 					{
 						move(selectedPiece, dstRow, dstCol);
 						capture(midRow, midCol);
+						captureInProgress = true;
 					
 						// check for continuous action for capture
 						if (continuousCaptureCheck(dstRow, dstCol))
@@ -249,6 +329,7 @@ public class CheckerPlayer
 						}
 						else
 						{
+							captureInProgress = false;
 							pieceSelected = false;
 							Checker.turnOver();
 						}
@@ -298,5 +379,10 @@ public class CheckerPlayer
 			}
 		}
 		return null;
+	}
+	
+	public boolean getCaptureInProgress()
+	{
+		return this.captureInProgress;
 	}
 }
