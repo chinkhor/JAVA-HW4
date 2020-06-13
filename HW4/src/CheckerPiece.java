@@ -16,6 +16,7 @@ public class CheckerPiece extends JButton
    private int row, col;
    private String label;
    private boolean crowned;
+   private boolean mustSelectNext;
    private Image img;
    
    // constructor
@@ -28,7 +29,7 @@ public class CheckerPiece extends JButton
 	   this.col = col;
 	   this.crowned = crown;
 	   this.label = CheckerPiece.constructLabel(row,  col);
-	   
+	   this.mustSelectNext = false;
 	   try 
 	   {
 		   this.img = ImageIO.read(new File("src/crown.png"));
@@ -37,6 +38,16 @@ public class CheckerPiece extends JButton
 		   System.out.println("Couldn't load/find crown.png");
 		   System.exit(0);
 	   }
+   }
+   
+   public boolean getMustSelectNext()
+   {
+	   return mustSelectNext;
+   }
+   
+   public void setMustSelectNext(boolean mustSelect)
+   {
+	   mustSelectNext = mustSelect;
    }
    
    // construct label based on row and col position
@@ -93,6 +104,12 @@ public class CheckerPiece extends JButton
    public boolean getCrown()
    {
 	   return crowned;
+   }
+   
+   public void flashButton()
+   {
+	   Thread t = new Thread();
+	   
    }
 }
 

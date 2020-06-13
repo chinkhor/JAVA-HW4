@@ -90,12 +90,21 @@ public class CheckerBoard implements ActionListener
 	public void selectTile(int row, int col)
 	{
 		tile[row][col].setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+		tile[row][col].repaint();
 	}
 	
+	// set tile border to highlight selection
+	public void selectTileTEST(int row, int col)
+	{
+		tile[row][col].setBorder(BorderFactory.createLineBorder(Color.GREEN));
+		tile[row][col].repaint();
+	}
+		
 	// clear tile border to highlight de-selection
 	public void deSelectTile(int row, int col)
 	{
 		tile[row][col].setBorder(BorderFactory.createEmptyBorder());
+		tile[row][col].repaint();
 	}
 	
 	// button click action, i.e. a piece is clicked or selected

@@ -1,6 +1,9 @@
 import java.awt.Color;
+import java.sql.Time;
 import java.util.ArrayList;
-import javax.swing.BorderFactory;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class CheckerPlayer 
 {
@@ -9,6 +12,7 @@ public class CheckerPlayer
 	private ArrayList<CheckerPiece> pieces = new ArrayList<CheckerPiece>();
 	private int kingRow;
 	private boolean captureInProgress = false;
+	private boolean fixAction = false;
 	
 	// constructor
 	public CheckerPlayer(Color player)
@@ -35,6 +39,21 @@ public class CheckerPlayer
 		    }	
 			kingRow = 0;
 		}
+	}
+	
+	public Color getPlayer()
+	{
+		return this.player;
+	}
+	
+	public boolean getFixAction()
+	{
+		return this.fixAction;
+	}
+	
+	public void setFixAction(boolean action)
+	{
+		fixAction = action;
 	}
 	
 	// add pieces to board
@@ -197,7 +216,7 @@ public class CheckerPlayer
 		}
 	}
 
-	public boolean continuousCaptureCheck (int srcRow, int srcCol)
+	public boolean captureCheck (int srcRow, int srcCol)
 	{
 		CheckerBoard board = Checker.getBoard();
 		int status1 = -1; 
@@ -271,8 +290,6 @@ public class CheckerPlayer
 					break;
 			}
 			
-			System.out.println("flycheck (" + incrementRow + "," + incrementCol + ") : row " + row + " col " + col + " status " + status);
-			
 			// potential capture, move on to check next tile
 			if (player == Checker.getOpponentPlayer())
 			{
@@ -302,7 +319,6 @@ public class CheckerPlayer
 				
 			int srcRow = selectedPiece.getRow();
 			int srcCol = selectedPiece.getCol();
-			System.out.println("Selected piece " + srcRow + ", " + srcCol + " to " + dstRow + ", " + dstCol);
 			
 			if (selectedPiece.getCrown())
 			{
@@ -329,6 +345,7 @@ public class CheckerPlayer
 						captureInProgress = false;
 						pieceSelected = false;
 						Checker.turnOver();
+						checkPlayerPossibleMove();
 					}
 				}
 			}
@@ -340,6 +357,7 @@ public class CheckerPlayer
 					move(selectedPiece, dstRow, dstCol);
 					pieceSelected = false;
 					Checker.turnOver();
+					checkPlayerPossibleMove();
 					return;
 				}
 			
@@ -365,7 +383,7 @@ public class CheckerPlayer
 						captureInProgress = true;
 					
 						// check for continuous action for capture
-						if (continuousCaptureCheck(dstRow, dstCol))
+						if (captureCheck(dstRow, dstCol))
 						{
 							selectPiece(dstRow, dstCol);
 							board.selectTile(dstRow, dstCol);
@@ -375,14 +393,13 @@ public class CheckerPlayer
 							captureInProgress = false;
 							pieceSelected = false;
 							Checker.turnOver();
+							checkPlayerPossibleMove();
 						}
 						return;
 					}
 				}
 			}
 		}
-		else
-			System.out.println("No piece is selected yet");
 	}
 	
 	// return player last selected piece for action
@@ -427,5 +444,96 @@ public class CheckerPlayer
 	public boolean getCaptureInProgress()
 	{
 		return this.captureInProgress;
+	}
+	
+	public ArrayList<CheckerPiece> getPlayerPieceArrayList()
+	{
+		return pieces;
+	}
+	
+	public void checkPlayerPossibleMove()
+	{
+		CheckerPlayer player = Checker.getPlayer(Checker.getCurrentPlayer());
+		CheckerBoard board = Checker.getBoard();
+		ArrayList<CheckerPiece> pieces = player.getPlayerPieceArrayList();
+		int count = 0;
+		
+		/*
+		test code
+		*/
+		if (player.getPlayer() == Color.ORANGE)
+		{
+			System.out.println("Player ORANGE: " + (player.getPlayer()==this.player));
+		}
+		else
+		{
+			System.out.println("Player WHITE: " + (player.getPlayer()==this.player));
+		}
+		/*   test code */
+		
+		for (CheckerPiece piece : pieces)
+		{
+			int row = piece.getRow();
+			int col = piece.getCol();
+			
+			System.out.print("CheckMove: piece (" + row + ", " + col + ") ");
+			if (player.captureCheck(row, col))
+			{
+				count++;
+				piece.setMustSelectNext(true);
+				System.out.println(" can capture");
+				
+			}
+			System.out.println(" ");
+		}
+		
+		if (count > 0)
+		{
+			player.setFixAction(true);
+			Scheduler s = new Scheduler();
+			Timer t = new Timer();
+			t.schedule(s, 1000, 1000);
+		}
+	}
+}
+
+class Scheduler extends TimerTask
+{
+	public void run()
+	{
+		CheckerPlayer player = Checker.getPlayer(Checker.getCurrentPlayer());
+		ArrayList<CheckerPiece> pieces = player.getPlayerPieceArrayList();
+		CheckerBoard board = Checker.getBoard();
+		ArrayList<CheckerPiece> flashList = new ArrayList<CheckerPiece> ();
+		
+		if (player.getFixAction())
+		{
+			for (CheckerPiece piece : pieces)
+			{
+				if (piece.getMustSelectNext())
+				{
+					int row = piece.getRow();
+					int col = piece.getCol();
+					board.selectTileTEST(row, col);
+					flashList.add(piece);
+				}	
+			}
+			try
+			{
+			    Thread.sleep(500);
+			}
+			catch(InterruptedException ex)
+			{
+			    Thread.currentThread().interrupt();
+			}
+			
+			for (CheckerPiece piece : flashList)
+			{
+				int row = piece.getRow();
+				int col = piece.getCol();
+				board.deSelectTile(row, col);
+			}
+		}
+		
 	}
 }
