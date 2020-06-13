@@ -7,6 +7,7 @@ public class CheckerPlayer
 	private Color player;
 	private boolean pieceSelected = false;
 	private ArrayList<CheckerPiece> pieces = new ArrayList<CheckerPiece>();
+	private int kingRow;
 	
 	// constructor
 	public CheckerPlayer(Color player)
@@ -21,6 +22,7 @@ public class CheckerPlayer
 				//create and add piece to board and player array list
 				addPiece (player, row);
 		    }	
+			kingRow = CheckerBoard.MAX_TILES - 1;
 		}
 		// orange color player
 		else
@@ -30,6 +32,7 @@ public class CheckerPlayer
 				//create and add piece to board and player array list
 				addPiece (player, row);
 		    }	
+			kingRow = 0;
 		}
 	}
 	
@@ -40,7 +43,7 @@ public class CheckerPlayer
     	while (col < CheckerBoard.MAX_TILES)
 		{
     		// create new piece
-    		CheckerPiece piece = new CheckerPiece(player,row,col);
+    		CheckerPiece piece = new CheckerPiece(player,row,col, false);
     		
     		// add piece to the checker board
     		CheckerBoard board = Checker.getBoard();
@@ -62,14 +65,18 @@ public class CheckerPlayer
 	public void move(CheckerPiece piece, int row, int col)
 	{
 		Color player = piece.getPlayer();
+		boolean crown = false;
 		
 		// remove piece
 		CheckerBoard board = Checker.getBoard();
 		board.removePiece(piece, piece.getRow(), piece.getCol());
 		pieces.remove(piece);
 		
+		if (row == kingRow)
+			crown = true;
+			
 		// create new piece
-		CheckerPiece newpiece = new CheckerPiece(player,row,col);
+		CheckerPiece newpiece = new CheckerPiece(player,row,col, crown);
 		
 		// add piece to the checker board
 		board.addPiece(newpiece, player, row, col);

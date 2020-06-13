@@ -1,6 +1,11 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 
 public class CheckerPiece extends JButton
@@ -10,17 +15,28 @@ public class CheckerPiece extends JButton
    private Color player;
    private int row, col;
    private String label;
+   private boolean crowned;
+   private Image img;
    
    // constructor
-   public CheckerPiece(Color player, int row, int col)
+   public CheckerPiece(Color player, int row, int col, boolean crown)
    {
 	   super();
 	   setBorderPainted(false);
 	   this.player = player;
 	   this.row = row;
 	   this.col = col;
+	   this.crowned = crown;
 	   this.label = CheckerPiece.constructLabel(row,  col);
-	   //System.out.println("Piece label: " + this.label);
+	   
+	   try 
+	   {
+		   this.img = ImageIO.read(new File("src/crown.png"));
+	   } catch (IOException e)
+	   {
+		   System.out.println("Couldn't load/find crown.png");
+		   System.exit(0);
+	   }
    }
    
    // construct label based on row and col position
@@ -32,10 +48,17 @@ public class CheckerPiece extends JButton
    // paint the button/piece
    public void paintComponent(Graphics g)
    {  
-      g.setColor(player);
-      g.drawOval(x, y, size, size);
-      g.fillOval(x, y, size, size);
-      super.paintComponent(g);
+	  Graphics2D g2 = (Graphics2D) g;
+	  
+	  super.paintComponent(g2);
+	  g2.setColor(player);
+      g2.drawOval(x, y, size, size);
+      g2.fillOval(x, y, size, size);
+      
+      if (crowned)
+      {
+    	  g2.drawImage(img, x, y, size,  size,  null);
+      }  
    }
    
    // get player owning the piece, his/her color code
@@ -61,4 +84,16 @@ public class CheckerPiece extends JButton
    {
 	   return this.label;
    }
+   
+   public void setCrown()
+   {
+	   crowned = true;
+   }
+   
+   public boolean getCrown()
+   {
+	   return crowned;
+   }
 }
+
+   

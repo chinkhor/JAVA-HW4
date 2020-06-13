@@ -71,7 +71,7 @@ public class CheckerBoard implements ActionListener
 	public Color getTileOwner (int row, int col)
 	{
 		// check out of bound
-		if (row < 0 || row > MAX_TILES || col < 0 || col > MAX_TILES)
+		if (row < 0 || row > MAX_TILES-1 || col < 0 || col > MAX_TILES-1)
 			return null;
 		
 		CheckerTile t = tile[row][col];
