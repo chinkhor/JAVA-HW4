@@ -72,7 +72,7 @@ public class CheckerPlayer
 		board.removePiece(piece, piece.getRow(), piece.getCol());
 		pieces.remove(piece);
 		
-		if (row == kingRow)
+		if ((row == kingRow) || piece.getCrown())
 			crown = true;
 			
 		// create new piece
@@ -86,13 +86,11 @@ public class CheckerPlayer
 	// player to capture opponent piece
 	public void capture (int row, int col)
 	{
-		System.out.println("capture : " + row + ", " + col);
 		CheckerPlayer player = Checker.getPlayer(Checker.getOpponentPlayer());
 		CheckerPiece piece = player.getPiece(row,  col);
 		
 		if (piece != null)
 		{
-			System.out.println("capture found piece : ");
 			// remove piece
 			CheckerBoard board = Checker.getBoard();
 			board.removePiece(piece, piece.getRow(), piece.getCol());
@@ -101,32 +99,50 @@ public class CheckerPlayer
 	}
 	
 	// player to check if a move is valid
-	public boolean checkForValidMove(int srcRow, int srcCol, int dstRow, int dstCol)
+	public boolean checkForValidMove (int srcRow, int srcCol, int dstRow, int dstCol)
 	{
+		// valid move
 		// orange player at bottom, valid moves are up (or -1 in row and +/- 1 in col)
 		if (this.player == Color.ORANGE)
 		{
-			// valid move
-			if (((dstRow - srcRow) == -1) && (Math.abs(dstCol - srcCol) == 1))
-			{
-				return true;
-			}
-			else
-				return false;
+			return (((dstRow - srcRow) == -1) && (Math.abs(dstCol - srcCol) == 1));
 		}
 		// white player at top, valid moves are down (or 1 in row and +/- 1 in col)
 		else
 		{
-			// valid move
-			if (((dstRow - srcRow) == 1) && (Math.abs(dstCol - srcCol) == 1))
-			{
-				return true;
-			}
-			else
-				return false;
+			return (((dstRow - srcRow) == 1) && (Math.abs(dstCol - srcCol) == 1));
 		}
 	}
-	
+				
+	// player to check if a fly is valid
+	public boolean checkForValidFly (int srcRow, int srcCol, int dstRow, int dstCol)
+	{
+		CheckerBoard board = Checker.getBoard();
+		
+		// fly diagonally
+		if (Math.abs(dstRow - srcRow) == Math.abs(dstCol - srcCol))
+		{
+			// check any obstacle piece along the fly
+			int incrementRow = (dstRow - srcRow)/Math.abs(dstRow - srcRow);
+			int incrementCol = (dstCol - srcCol)/Math.abs(dstCol - srcCol);
+			int row = srcRow;
+			int col = srcCol;
+			System.out.println("increment " + incrementRow + " and " + incrementCol);
+			
+			// since this is diagonal fly, just check for row (col will increment accordingly too)
+			while (row != dstRow)
+			{
+				row += incrementRow;
+				col += incrementCol;
+				if (board.getTileOwner(row, col) != Color.BLACK) // use black to indicate un-occupied
+					return false;		
+			}
+			return true; // no obstacle if get here
+		}
+		
+		return false;
+	}
+		
 	// player to check can make a jump to capture, this check will follow by a capture test
 	public boolean checkForValidJump(int srcRow, int srcCol, int dstRow, int dstCol)
 	{
@@ -134,23 +150,13 @@ public class CheckerPlayer
 		if (this.player == Color.ORANGE)
 		{
 			// valid jump
-			if (((dstRow - srcRow) == -2) && (Math.abs(dstCol - srcCol) == 2))
-			{
-				return true;
-			}
-			else
-				return false;
+			return (((dstRow - srcRow) == -2) && (Math.abs(dstCol - srcCol) == 2));
 		}
 		// white player at top, valid jumps are down (or 2 in row and +/- 2 in col)
 		else
 		{
 			// valid move
-			if (((dstRow - srcRow) == 2) && (Math.abs(dstCol - srcCol) == 2))
-			{
-				return true;
-			}
-			else
-				return false;
+			return (((dstRow - srcRow) == 2) && (Math.abs(dstCol - srcCol) == 2));
 		}
 	}
 
@@ -200,43 +206,56 @@ public class CheckerPlayer
 			int srcCol = selectedPiece.getCol();
 			System.out.println("Selected piece " + srcRow + ", " + srcCol + " to " + dstRow + ", " + dstCol);
 			
-			boolean validMove = checkForValidMove(srcRow, srcCol, dstRow, dstCol);
-			if (validMove)
+			if (selectedPiece.getCrown())
 			{
-				move(selectedPiece, dstRow, dstCol);
-				pieceSelected = false;
-				Checker.turnOver();
-				return;
-			}
-			
-			boolean validJump = checkForValidJump(srcRow, srcCol, dstRow, dstCol);
-			if (validJump)
-			{
-				int midRow = (dstRow - srcRow)/2 + srcRow;
-				int midCol = (dstCol - srcCol)/2 + srcCol;
-				CheckerBoard board = Checker.getBoard();
-				
-				// check for valid capture
-				if (board.getTileOwner(midRow, midCol) == Checker.getOpponentPlayer())
+				if (checkForValidFly(srcRow, srcCol, dstRow, dstCol))
 				{
+					// valid fly
 					move(selectedPiece, dstRow, dstCol);
-					capture(midRow, midCol);
-					
-					// check for continuous action for capture
-					if (continuousCaptureCheck(dstRow, dstCol))
-					{
-						selectPiece(dstRow, dstCol);
-						board.selectTile(dstRow, dstCol);
-					}
-					else
-					{
-						pieceSelected = false;
-						Checker.turnOver();
-					}
+					pieceSelected = false;
+					Checker.turnOver();
 					return;
 				}
 			}
+			else
+			{
+				if (checkForValidMove(srcRow, srcCol, dstRow, dstCol))
+				{
+					// valid move
+					move(selectedPiece, dstRow, dstCol);
+					pieceSelected = false;
+					Checker.turnOver();
+					return;
+				}
 			
+				boolean validJump = checkForValidJump(srcRow, srcCol, dstRow, dstCol);
+				if (validJump)
+				{
+					int midRow = (dstRow - srcRow)/2 + srcRow;
+					int midCol = (dstCol - srcCol)/2 + srcCol;
+					CheckerBoard board = Checker.getBoard();
+				
+					// check for valid capture
+					if (board.getTileOwner(midRow, midCol) == Checker.getOpponentPlayer())
+					{
+						move(selectedPiece, dstRow, dstCol);
+						capture(midRow, midCol);
+					
+						// check for continuous action for capture
+						if (continuousCaptureCheck(dstRow, dstCol))
+						{
+							selectPiece(dstRow, dstCol);
+							board.selectTile(dstRow, dstCol);
+						}
+						else
+						{
+							pieceSelected = false;
+							Checker.turnOver();
+						}
+						return;
+					}
+				}
+			}
 		}
 		else
 			System.out.println("No piece is selected yet");
