@@ -69,18 +69,20 @@ public class CheckerBoard implements ActionListener
 	}
 	
     // check the owner/player of a given tile (with a piece on it or not, i.e. occupied) 
-	public Color getTileOwner (int row, int col)
-	{
+	public int getTileOwner (int row, int col)
+	{		
 		// check out of bound
 		if (row < 0 || row > MAX_TILES-1 || col < 0 || col > MAX_TILES-1)
-			return null;
+			return -1;
 		
 		CheckerTile t = tile[row][col];
 		
 		if (t.getOccupied()==false)
-			return Color.BLACK; // use black to indicate un-occupied
-		else 
-			return t.getPlayer();
+			return 0; 
+		else if (t.getPlayer() == Color.WHITE)
+			return 1;
+		else
+			return 2; // player is ORANGE
 		
 	}
 	

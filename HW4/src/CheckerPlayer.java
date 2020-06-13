@@ -141,7 +141,13 @@ public class CheckerPlayer
 			{
 				row += incrementRow;
 				col += incrementCol;
-				Color player = board.getTileOwner(row, col);
+				Color player = Color.black; // dummy initialization
+				int status = board.getTileOwner(row, col);
+				if (status == 1)
+					player = Color.white;
+				else if (status == 2)
+					player = Color.orange;
+				
 				if (player == Checker.getCurrentPlayer()) // blocked by own's piece
 					return -1;
 				else if (player == Checker.getOpponentPlayer()) // potential capture 
@@ -194,34 +200,34 @@ public class CheckerPlayer
 	public boolean continuousCaptureCheck (int srcRow, int srcCol)
 	{
 		CheckerBoard board = Checker.getBoard();
+		int status1 = -1; 
+		int status2 = -1;
 		
 		if (this.player == Color.ORANGE)
 		{
-			if ((board.getTileOwner(srcRow-1, srcCol-1) == Checker.getOpponentPlayer()) &&
-				(board.getTileOwner(srcRow-2, srcCol-2) == Color.BLACK)) // use BLACK to indicate un-occupied tile	
-			{
+			status1 = board.getTileOwner(srcRow-1, srcCol-1);
+			status2 = board.getTileOwner(srcRow-2, srcCol-2);
+			if ((status1 == 1) && (status2 == 0)) // status1: 1 = WHITE (opponent), status2 = 0 (un-occupied)
 				return true;
-			}
-			else if ((board.getTileOwner(srcRow-1, srcCol+1) == Checker.getOpponentPlayer()) &&
-					 (board.getTileOwner(srcRow-2, srcCol+2) == Color.BLACK)) // use BLACK to indicate un-occupied tile	
-			{
+					
+			status1 = board.getTileOwner(srcRow-1, srcCol+1);
+			status2 = board.getTileOwner(srcRow-2, srcCol+2);
+			if ((status1 == 1) && (status2 == 0)) // status1: 1 = WHITE (opponent), status2 = 0 (un-occupied)
 				return true;
-			}	
 		}
-		else
+		else // this player is WHITE
 		{
-			if ((board.getTileOwner(srcRow+1, srcCol-1) == Checker.getOpponentPlayer()) &&
-				(board.getTileOwner(srcRow+2, srcCol-2) == Color.BLACK)) // use BLACK to indicate un-occupied tile	
-			{
+			status1 = board.getTileOwner(srcRow+1, srcCol-1);
+			status2 = board.getTileOwner(srcRow+2, srcCol-2);
+			if ((status1 == 2) && (status2 == 0)) // status1: 2 = ORANGE (opponent), status2 = 0 (un-occupied)
 				return true;
-			}
-			else if ((board.getTileOwner(srcRow+1, srcCol+1) == Checker.getOpponentPlayer()) &&
-						(board.getTileOwner(srcRow+2, srcCol+2) == Color.BLACK)) // use BLACK to indicate un-occupied tile	
-			{
+					
+			status1 = board.getTileOwner(srcRow+1, srcCol+1);
+			status2 = board.getTileOwner(srcRow+2, srcCol+2);
+			if ((status1 == 2) && (status2 == 0)) // status1: 2 = ORANGE (opponent), status2 = 0 (un-occupied)
 				return true;
-			}				
 		}
-		
+		// no possible capture
 		return false;
 	}
 	
@@ -231,28 +237,58 @@ public class CheckerPlayer
 		int row = srcRow + incrementRow;
 		int col = srcCol + incrementCol;
 		int opponentCount = 0;
+		boolean occupied = false;
+		boolean outBoardBoundaryHit = false;
+		Color player = Color.BLACK;
 		
 		while (true)
 		{
-			Color player = board.getTileOwner(row, col);
-			if (player == Checker.getOpponentPlayer())
-				++opponentCount;
-		
-			// only potential capture scenario
-			if ((opponentCount == 1) && (player == Color.BLACK)) // use Color.BLACK to indicate un-occupied tile
-				return true;
+			int status = board.getTileOwner(row, col);
 			
-			// player == null -> out of board boundary, stop
-			// player == Checker.getCurrentPlayer -> blocked by own's piece, stop
-			// opponentCount > 1 -> two opponent pieces along the line, stop
-			// player == Color.BLACK -> un-occupied title without opponent piece in between, stop
-			if ((player == null) || (player == Checker.getCurrentPlayer()) || (opponentCount > 1) || (player == Color.BLACK))
-				break;	
+			switch (status)
+			{
+				case 0:
+				{
+					occupied = false;
+					player = Color.black;
+					break;
+				}
+				case 1:
+				{
+					occupied = true;
+					player = Color.white;
+					break;
+				}
+				case 2:
+				{
+					occupied = true;
+					player = Color.orange;
+					break;
+				}
+				default: // out of board boundary, status = -1
+					outBoardBoundaryHit = true;
+					player = Color.black;
+					break;
+			}
+			
+			System.out.println("flycheck (" + incrementRow + "," + incrementCol + ") : row " + row + " col " + col + " status " + status);
+			
+			// potential capture, move on to check next tile
+			if (player == Checker.getOpponentPlayer())
+			{
+				++opponentCount;
+			}
+			// out of board boundary, or two consecutive opponent pieces, or block by own's piece
+			if (outBoardBoundaryHit || (opponentCount > 1) || (player == Checker.getCurrentPlayer()))
+				return false;
+			// potential capture scenario
+			else if ((opponentCount ==1) && (occupied == false))
+				return true;
 			
 			row += incrementRow;
 			col += incrementCol;
 		}
-		return false;
+
 	}
 	
 	// notify player after mouse click with a piece is selected for next action
@@ -315,7 +351,14 @@ public class CheckerPlayer
 					
 				
 					// check for valid capture
-					if (board.getTileOwner(midRow, midCol) == Checker.getOpponentPlayer())
+					int status = board.getTileOwner(midRow, midCol);
+					Color player = Color.black; // dummy initialization
+					if (status == 1)
+						player = Color.white;
+					else if (status == 2)
+						player = Color.orange;
+						
+					if (player == Checker.getOpponentPlayer())
 					{
 						move(selectedPiece, dstRow, dstCol);
 						capture(midRow, midCol);
