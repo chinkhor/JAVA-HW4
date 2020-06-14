@@ -1,7 +1,11 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
+//import java.awt.Container;
 import java.awt.GridLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 
 public class Checker 
@@ -9,6 +13,7 @@ public class Checker
 	private static CheckerPlayer playerW, playerY;
 	private static CheckerBoard board;
 	private static Color currentPlayer = Color.ORANGE;
+	private static JLabel label;
 	
 	// constructor
 	public Checker()
@@ -23,11 +28,18 @@ public class Checker
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(length, width);
 		
-		Container pane = frame.getContentPane();
-        pane.setLayout(new GridLayout(tiles,tiles));
+		label = new JLabel("Current Player: ORANGE  ", SwingConstants.RIGHT);
+		frame.add(label, BorderLayout.NORTH);
+		
+		JPanel panel = new JPanel();
+		frame.add(panel, BorderLayout.CENTER);
+		panel.setLayout(new GridLayout(tiles,tiles));
+		
+		//Container pane = frame.getContentPane();
+        //pane.setLayout(new GridLayout(tiles,tiles));
         
         // create and draw Checker Board
-        board = new CheckerBoard(pane);
+        board = new CheckerBoard(panel);
         
         // create and add players
         playerW = new CheckerPlayer(Color.WHITE);
@@ -40,10 +52,17 @@ public class Checker
 	public static void turnOver()
 	{
 		if (currentPlayer == Color.WHITE)
+		{
 			currentPlayer = Color.ORANGE;
+			label.setText("Current Player: ORANGE  ");
+			System.out.println("Turn over to Player ORANGE now");
+		}
 		else
+		{
 			currentPlayer = Color.WHITE;
-		
+			label.setText("Current Player: WHITE  ");
+			System.out.println("Turn over to Player WHITE now");
+		}
 	}
 	
 	// get the player's instance

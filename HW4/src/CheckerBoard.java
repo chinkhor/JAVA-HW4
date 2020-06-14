@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.BorderFactory;
 
@@ -45,6 +46,7 @@ public class CheckerBoard implements ActionListener
 		// place piece on tile
 		tile[row][col].add(piece, BorderLayout.CENTER);
 		tile[row][col].repaint();
+		piece.repaint();
 		tile[row][col].setOccupied(true, player);
 		
 		piece.addActionListener(this);
@@ -112,16 +114,37 @@ public class CheckerBoard implements ActionListener
 	{
 		CheckerPiece piece = (CheckerPiece) e.getSource();
 		
+		//test code
+		String str = "WHITE";
+		if (piece.getPlayer() == Color.ORANGE)
+			str = "ORANGE";
+		//test code
+		
+		System.out.print ("piece " + str + " (" + piece.getRow() + ", " + piece.getCol() + ") is selected");
 		if (piece.getPlayer() == Checker.getCurrentPlayer())
 		{
 			int row = piece.getRow();
 			int col = piece.getCol();
-			
+
 			// get current player
 			CheckerPlayer player = Checker.getPlayer(piece.getPlayer());
+			boolean limitSelect = player.getLimitSelection();
+			
+			System.out.println(", limitSelect " + limitSelect + "  piece pre-select " + piece.getPreSelect() + " captureinprogress " + player.getCaptureInProgress());
+			// test code
+			ArrayList<CheckerPiece> preSelectList = player.getPlayerPreSelectArrayList();
+			System.out.print ("Pre-select list: ");
+			for (CheckerPiece piece1 : preSelectList)
+			{
+				System.out.print(piece1.getLabel() + ", ");
+			}
+			System.out.println("");
+			// test code
 			
 			// don't allow piece switching when capture is in progress
-			if (!player.getCaptureInProgress())
+			// and, if this piece is pre-selected for next move/action 
+			if (!player.getCaptureInProgress() && 
+				(!limitSelect || (limitSelect && piece.getPreSelect())))
 			{
 				// get last selected piece (if any) by current player and de-select the component
 				CheckerPiece lastSelectedPiece = player.getLastSelectedPiece();
@@ -131,7 +154,9 @@ public class CheckerBoard implements ActionListener
 				player.selectPiece(row, col);
 				selectTile(row, col);
 			}
+			
 		}
+		System.out.println(" ");
 		
 	}
 
