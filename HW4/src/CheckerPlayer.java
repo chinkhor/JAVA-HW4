@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -524,7 +523,6 @@ public class CheckerPlayer
 	public void checkPlayerPossibleMove()
 	{
 		CheckerPlayer player = Checker.getPlayer(Checker.getCurrentPlayer());
-		CheckerBoard board = Checker.getBoard();
 		ArrayList<CheckerPiece> pieces = player.getPlayerPieceArrayList();
 		ArrayList<CheckerPiece> preSelectList = player.getPlayerPreSelectArrayList();
 		
